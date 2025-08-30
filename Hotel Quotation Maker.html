@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Quotation – Hotel Pachmarhi</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    h2 { color: #2e7d32; margin-bottom: 20px;}
+    .form-section { margin-bottom: 20px;}
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select, textarea { box-sizing: border-box; display: block; width: 100%; margin-bottom: 15px; padding: 8px; font-size: 16px; }
+    .row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;}
+    .row > div { flex: 1; min-width: 150px;}
+    button { background-color: #2e7d32; color: white; border: none; cursor: pointer; padding: 10px 20px; margin-bottom: 15px;}
+    .gst-selected { background-color: #1b5e20 !important; }
+    .tab { cursor: pointer; padding: 10px; background: #ddd; margin-right: 5px; border-radius: 5px 5px 0 0;}
+    .tab.active { background: #2e7d32; color: #fff;}
+    .hidden { display: none;}
+    table {width: 100%; border-collapse: collapse; margin-bottom: 20px;}
+    th, td {border: 1px solid #aaa; padding: 6px; text-align: left;}
+    th {background: #e0f2f1;}
+    @media (max-width: 600px) {
+      .row { flex-direction: column; }
+      .row > div { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Hotel Quotation – Hotel Pachmarhi</h2>
+
+  <div>
+    <span class="tab active" onclick="switchTab('form')">Quotation Form</span>
+    <span class="tab" onclick="switchTab('records')">Saved Records</span>
+  </div>
+
+  <div id="formTab">
+    <div class="form-section">
+      <label>Name of Guest</label>
+      <input type="text" id="guestName" placeholder="Name of Guest">
+      <label>Phone Number</label>
+      <input type="tel" id="phoneNumber" placeholder="Phone Number">
+      <div class="row">
+        <div>
+          <label>Check-In Date</label>
+          <input type="date" id="checkInDate">
+        </div>
+        <div>
+          <label>Check-Out Date</label>
+          <input type="date" id="checkOutDate">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Adults</label>
+          <input type="number" id="adults" placeholder="Adults" min="0">
+        </div>
+        <div>
+          <label>Children</label>
+          <input type="number" id="children" placeholder="Children" min="0">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Adult Extra Rate</label>
+          <input type="number" id="extraAdultRate" placeholder="Adult Extra Rate" min="0">
+        </div>
+        <div>
+          <label>Child Extra Rate</label>
+          <input type="number" id="extraChildRate" placeholder="Child Extra Rate" min="0">
+        </div>
+      </div>
+      <label>Room Details</label>
+      <div class="row">
+        <div>
+          <label>Deluxe Rooms</label>
+          <input type="number" id="deluxeRooms" placeholder="Deluxe Rooms" min="0">
+        </div>
+        <div>
+          <label>Deluxe Room Rate</label>
+          <input type="number" id="deluxeRate" placeholder="Deluxe Room Rate" min="0">
+        </div>
+        <div>
+          <label>Super Deluxe Rooms</label>
+          <input type="number" id="superDeluxeRooms" placeholder="Super Deluxe Rooms" min="0">
+        </div>
+        <div>
+          <label>Super Deluxe Rate</label>
+          <input type="number" id="superDeluxeRate" placeholder="Super Deluxe Rate" min="0">
+        </div>
+      </div>
+      <div>
+        <label>Total Room Cost</label>
+        <span id="totalRoomCost">₹0</span>
+      </div>
+      <div>
+        <label>Total Cost of Extras (Persons)</label>
+        <span id="totalExtrasCost">₹0</span>
+      </div>
+      <label>Plan</label>
+      <select id="plan" onchange="setPlanDesc()">
+        <option value="EP">EP - Room Only</option>
+        <option value="CP">CP - Including Breakfast</option>
+        <option value="MAP">MAP - Breakfast + Lunch/Dinner</option>
+        <option value="AP">AP - Breakfast + Lunch + Dinner</option>
+      </select>
+      <div id="planDesc"></div>
+    </div>
+    <div class="form-section">
+      <label>Extras</label>
+      <table>
+        <thead>
+          <tr>
+            <th>Particulars</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pick-Up Type <select id="pickupType">
+              <option value="">Select</option>
+              <option value="Non AC">Non AC</option>
+              <option value="AC">AC</option>
+            </select></td>
+            <td><input type="number" id="pickupRate" placeholder="Pick-Up Charges" min="0"></td>
+          </tr>
+          <tr>
+            <td>Drop Type <select id="dropType">
+              <option value="">Select</option>
+              <option value="Non AC">Non AC</option>
+              <option value="AC">AC</option>
+            </select></td>
+            <td><input type="number" id="dropRate" placeholder="Drop Charges" min="0"></td>
+          </tr>
+          <tr>
+            <td>Sightseeing Days <input type="number" id="sightseeingDays" style="width:60px;" placeholder="Days" min="0"></td>
+            <td><input type="number" id="sightseeingRate" placeholder="Amount" min="0"></td>
+          </tr>
+          <tr>
+            <td>Other Extras</td>
+            <td><input type="number" id="extras" placeholder="Other Extras" min="0"></td>
+          </tr>
+        </tbody>
+      </table>
+      <label>Select GST</label>
+      <div class="row">
+        <button type="button" onclick="setGST(0, this)">None</button>
+        <button type="button" onclick="setGST(0.05, this)">5%</button>
+        <button type="button" onclick="setGST(0.12, this)">12%</button>
+      </div>
+    </div>
+    <textarea id="guidelines" rows="6">• Check-in Time :- 12 Noon
+• Check out Time:- 11 Am.
+• Outstanding amount should be paid at the time of check in.
+• Early check-in and late check-out are subject to availability and may be chargeable.
+• Cancellation Policy
+15 Days or Above- Full Refund
+7-14 days -25% Cancellation Charges
+3-6 days-50% Cancellation Charge
+Below 3 days No refund</textarea>
+    <button onclick="generateAndSaveQuotation()">Generate Quotation &amp; Open WhatsApp</button>
+  </div>
+
+  <div id="recordsTab" class="hidden">
+    <h3>Saved Quotations</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Guest Name</th>
+          <th>Phone</th>
+          <th>Stay</th>
+          <th>Grand Total</th>
+        </tr>
+      </thead>
+      <tbody id="recordsBody"></tbody>
+    </table>
+    <button onclick="clearRecords()">Clear All Records</button>
+  </div>
+
+  <script>
+    // Tab section
+    function switchTab(tab) {
+      document.getElementById('formTab').classList.toggle('hidden', tab !== 'form');
+      document.getElementById('recordsTab').classList.toggle('hidden', tab !== 'records');
+      document.querySelectorAll('.tab').forEach(btn=>btn.classList.remove('active'));
+      if(tab==="form") document.querySelectorAll('.tab').classList.add('active');
+      else document.querySelectorAll('.tab')[4].classList.add('active');
+      if(tab==="records") displayRecords();
+    }
+
+    function setPlanDesc() {
+      var desc = "";
+      switch(document.getElementById("plan").value) {
+        case "EP": desc = "Room Only, no meals included."; break;
+        case "CP": desc = "Room + Breakfast included."; break;
+        case "MAP": desc = "Room, Breakfast + one Meal (Lunch/Dinner) included."; break;
+        case "AP": desc = "Room + Breakfast, Lunch and Dinner included."; break;
+      }
+      document.getElementById("planDesc").innerText = desc;
+    }
+    setPlanDesc();
+
+    let gstRate = 0;
+    let lastSelectedButton = null;
+    function setGST(rate, button) {
+      gstRate = rate;
+      if (lastSelectedButton) lastSelectedButton.classList.remove('gst-selected');
+      button.classList.add('gst-selected');
+      lastSelectedButton = button;
+    }
+
+    document.getElementById('checkInDate').addEventListener('change', function() {
+      document.getElementById('checkOutDate').setAttribute('min', this.value);
+    });
+
+    function updateCostDisplays() {
+      const nights = getNights();
+      const deluxeRooms = +document.getElementById('deluxeRooms').value || 0;
+      const deluxeRate = +document.getElementById('deluxeRate').value || 0;
+      const superDeluxeRooms = +document.getElementById('superDeluxeRooms').value || 0;
+      const superDeluxeRate = +document.getElementById('superDeluxeRate').value || 0;
+      const adults = +document.getElementById('adults').value || 0;
+      const children = +document.getElementById('children').value || 0;
+      const extraAdultRate = +document.getElementById('extraAdultRate').value || 0;
+      const extraChildRate = +document.getElementById('extraChildRate').value || 0;
+      const totalRooms = deluxeRooms + superDeluxeRooms;
+      const includedAdults = totalRooms * 2;
+      const extraAdultCount = Math.max(0, adults - includedAdults);
+      const extraChildCount = Math.max(0, children);
+      const roomTotal = (deluxeRooms * deluxeRate + superDeluxeRooms * superDeluxeRate) * nights;
+      const extraAdultTotal = extraAdultCount * extraAdultRate * nights;
+      const extraChildTotal = extraChildCount * extraChildRate * nights;
+      document.getElementById('totalRoomCost').innerText = '₹' + roomTotal;
+      document.getElementById('totalExtrasCost').innerText = '₹' + (extraAdultTotal + extraChildTotal);
+    }
+
+    ['deluxeRooms','deluxeRate','superDeluxeRooms','superDeluxeRate','adults','children','extraAdultRate','extraChildRate','checkInDate','checkOutDate'].forEach(id=>{
+      document.getElementById(id).addEventListener('input', updateCostDisplays);
+    });
+
+    function getNights() {
+      const checkInDate = new Date(document.getElementById('checkInDate').value);
+      const checkOutDate = new Date(document.getElementById('checkOutDate').value);
+      if (!checkInDate || !checkOutDate) return 1;
+      let days = Math.round((checkOutDate - checkInDate) / (1000 * 3600 * 24));
+      return Math.max(1, days);
+    }
+
+    function generateAndSaveQuotation() {
+      const guestName = document.getElementById('guestName').value || "Guest";
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const checkInDateVal = document.getElementById('checkInDate').value;
+      const checkOutDateVal = document.getElementById('checkOutDate').value;
+      if (!checkInDateVal || !checkOutDateVal || new Date(checkOutDateVal) <= new Date(checkInDateVal)) {
+        alert("Check-out date must be after check-in date.");
+        return;
+      }
+      const checkInDate = new Date(checkInDateVal);
+      const checkOutDate = new Date(checkOutDateVal);
+      const nights = getNights();
+      const adults = +document.getElementById('adults').value || 0;
+      const children = +document.getElementById('children').value || 0;
+      const extraAdultRate = +document.getElementById('extraAdultRate').value || 0;
+      const extraChildRate = +document.getElementById('extraChildRate').value || 0;
+      const deluxeRooms = +document.getElementById('deluxeRooms').value || 0;
+      const deluxeRate = +document.getElementById('deluxeRate').value || 0;
+      const superDeluxeRooms = +document.getElementById('superDeluxeRooms').value || 0;
+      const superDeluxeRate = +document.getElementById('superDeluxeRate').value || 0;
+      const plan = document.getElementById('plan').value;
+      const planDesc = document.getElementById('planDesc').innerText;
+      const pickupType = document.getElementById('pickupType').value;
+      const pickupRate = +document.getElementById('pickupRate').value || 0;
+      const dropType = document.getElementById('dropType').value;
+      const dropRate = +document.getElementById('dropRate').value || 0;
+      const sightseeingDays = +document.getElementById('sightseeingDays').value || 0;
+      const sightseeingRate = +document.getElementById('sightseeingRate').value || 0;
+      const extras = +document.getElementById('extras').value || 0;
+      const guidelines = document.getElementById('guidelines').value;
+      const totalRooms = deluxeRooms + superDeluxeRooms;
+      const includedAdults = totalRooms * 2;
+      const extraAdultCount = Math.max(0, adults - includedAdults);
+      const extraChildCount = Math.max(0, children);
+      const extraAdultTotal = extraAdultCount * extraAdultRate * nights;
+      const extraChildTotal = extraChildCount * extraChildRate * nights;
+      const extraPersonTotal = extraAdultTotal + extraChildTotal;
+      const roomTotal = (deluxeRooms * deluxeRate + superDeluxeRooms * superDeluxeRate) * nights;
+      const roomTariff = roomTotal + extraPersonTotal;
+      const gstAmount = Math.round(roomTariff * gstRate);
+      const addonTotal = pickupRate + dropRate + sightseeingRate + extras;
+      const total = roomTariff + addonTotal + gstAmount;
+      const msg =
+`🌿 *Hotel Pachmarhi – Quotation* 🌿
+
+👤 *Name:* ${guestName}
+📞 *Phone:* ${phoneNumber}
+🗓️ *Stay:* ${checkInDate.toDateString()} to ${checkOutDate.toDateString()} (${nights} nights)
+🛌 *Rooms:* Deluxe × ${deluxeRooms} @ ₹${deluxeRate}, Super Deluxe × ${superDeluxeRooms} @ ₹${superDeluxeRate}
+🏨 *Total Rooms:* ${totalRooms}
+👥 *Persons:* ${adults} Adult(s), ${children} Child(ren)
+
+➕ *Extra Person Charges:*
+• Adults: ${extraAdultCount} × ₹${extraAdultRate} × ${nights} night(s) = ₹${extraAdultTotal}
+• Children: ${extraChildCount} × ₹${extraChildRate} × ${nights} night(s) = ₹${extraChildTotal}
+💰 *Total Extra:* ₹${extraPersonTotal}
+
+📋 *Plan:* ${plan} (${planDesc})
+
+💰 *Total Room Cost:* ₹${roomTotal}
+💰 *Total Cost of Extras (Persons):* ₹${extraPersonTotal}
+🏨 *Room Tariff (incl. extras):* ₹${roomTariff}
+
+🚗 *Addons:*
+- Pick-up (${pickupType}) ₹${pickupRate}
+- Drop (${dropType}) ₹${dropRate}
+- Sightseeing (${sightseeingDays} days) ₹${sightseeingRate}
+- Other ₹${extras}
+
+💰 *Total Addons:* ₹${addonTotal}
+🧾 *GST (${gstRate*100}%):* ₹${gstAmount}
+💳 *Grand Total:* ₹${total}
+
+📌 *Guidelines / Cancellation:*
+${guidelines}`;
+
+      // Save record offline automatically
+      const record = {
+        date: new Date().toLocaleString(),
+        guestName: guestName,
+        phone: phoneNumber,
+        stay: `${checkInDateVal} to ${checkOutDateVal} (${nights} nights)`,
+        grandTotal: '₹' + total
+      };
+      let records = JSON.parse(localStorage.getItem('hotelRecords') || '[]');
+      records.push(record);
+      localStorage.setItem('hotelRecords', JSON.stringify(records));
+
+      // Open WhatsApp Business
+      window.open(`https://wa.me/91${phoneNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function displayRecords() {
+      let records = JSON.parse(localStorage.getItem('hotelRecords') || '[]');
+      const tbody = document.getElementById('recordsBody');
+      tbody.innerHTML = "";
+      if(!records.length){
+        tbody.innerHTML = "<tr><td colspan='5'>No records found.</td></tr>";
+        return;
+      }
+      records.forEach(r=>{
+        const tr = document.createElement
